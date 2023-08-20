@@ -55,3 +55,24 @@ char *get_commandline(int isattr_val)
 	}
 	return (line);
 }
+
+
+/**
+ * free_file - free all files
+ * @line: double pointer argument
+ * Return: null
+ */
+
+char **free_file(char **line)
+{
+	int i;
+
+	for (i = 0; line[i]; i++)
+	{
+		free(line[i]);
+		line[i] = NULL;
+	}
+	free(line);
+	line = NULL;
+	return (NULL);
+}

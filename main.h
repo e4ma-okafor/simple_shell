@@ -16,5 +16,6 @@ int main(int argc __attribute__((unused)), char **argv, char **envr);
 void shell_prompt(void);
 void exit_shell(void);
 char *get_commandline(int isattr_val);
+char **free_file(char **line);
 
 #endif
