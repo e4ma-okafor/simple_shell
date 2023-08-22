@@ -26,11 +26,12 @@ void exit_shell(void)
 
 
 /**
- * get_commandline - prints the shell prompt and wait for a command
+ * get_line - prints the shell prompt and wait for a command
  * @isattr_val: function argument
  * Return: the command (line)
  **/
-char *get_commandline(int isattr_val)
+
+char *get_line(int isattr_val)
 {
 	ssize_t read = 0;
 	size_t buffer_len = 0;
@@ -63,7 +64,7 @@ char *get_commandline(int isattr_val)
  * Return: null
  */
 
-char **free_file(char **line)
+char **free_dp(char **line)
 {
 	int i;
 
