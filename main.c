@@ -1,79 +1,41 @@
 #include "main.h"
 
 /**
- * shell_prompt - prints the prompt
- * @void: the environment
- * Return: void
+ * main - Entry point
+ * Return: 0 on success
  */
 
-void shell_prompt(void)
+int main(void)
 {
-	write(STDOUT, "\033[1;31m$ ", 32);
-	write(STDOUT, "\033[0m", 4);
-}
+	char *fullpathbuffer = NULL, *copy = NULL, *buffer = NULL;
+	char *PATH = NULL;
+	char **argv = NULL;
+	int exitstatus = 0;
 
-
-/**
- * exit_shell - exits the shell
- * @void: the exit
- * Return: void
- */
-
-void exit_shell(void)
-{
-	kill(getpid(), SIGTERM);
-}
-
-
-/**
- * get_line - prints the shell prompt and wait for a command
- * @isattr_val: function argument
- * Return: the command (line)
- **/
-
-char *get_line(int isattr_val)
-{
-	ssize_t read = 0;
-	size_t buffer_len = 0;
-	char *line = NULL;
-
-	if (isattr_val == 1)
+	signal(SIGINT, SIG_IGN);
+	PATH = _getenv("PATH");
+	if (PATH == NULL)
+		return (-1);
+	while (1)
 	{
-		write(STDOUT, "\033[1;31m$ ", 32);
-		write(STDOUT, "\033[0m", 4);
-	}
-
-	read = getline(&line, &buffer_len, stdin);
-
-	if (read == EOF)
-	{
-		if (isattr_val == 1)
+		argv = NULL;
+		prompt();
+		buffer = _read();
+		if (*buffer != '\0')
 		{
-			printf("\n");
+			argv = tokenize(buffer);
+			if (argv == NULL)
+			{
+				free(buffer);
+				continue;
+			}
+			fullpathbuffer = _fullpathbuffer(argv, PATH, copy);
+			if (checkbuiltins(argv, buffer, exitstatus) != 0)
+				continue;
+			exitstatus = _forkprocess(argv, buffer, fullpathbuffer);
 		}
-		free(line);
-		exit(EXIT_SUCCESS);
+		else
+			free(buffer);
 	}
-	return (line);
-}
-
-
-/**
- * free_dp - free all files
- * @line: double pointer argument
- * Return: null
- */
-
-char **free_dp(char **line)
-{
-	int i;
-
-	for (i = 0; line[i]; i++)
-	{
-		free(line[i]);
-		line[i] = NULL;
-	}
-	free(line);
-	line = NULL;
-	return (NULL);
+	return (0);
 }

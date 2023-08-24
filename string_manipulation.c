@@ -1,151 +1,106 @@
 #include "main.h"
 
 /**
- * _strcmp - strings comparison
- * @s1: first string
- * @s2: second string
- * Return: an array
+ * _strdup - duplicates a string
+ * @str: pointer to string to be duplicated
+ * Return: pointer to the duplicated string
  */
-
-int _strcmp(char *s1, char *s2)
-{
-	int i = 0;
-
-	while (s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
-	{
-		i++;
-	}
-	return (s1[i] - s2[i]);
-}
-
-
-/**
- * _strlen - computes the lenght of a string
- * @str: input string
- * Return: the lenght of the string
- */
-
-int _strlen(char *str)
-{
-	int len = 0, index = 0;
-
-	while (str[index] != '\0')
-	{
-		len++;
-		index++;
-	}
-	return (len);
-}
-
-
-/**
- *_strdup - duplicates a string
- *@str: pointer to the string
- *Return: an array
- */
-
 char *_strdup(char *str)
 {
-	char *dup;
-	unsigned int i, size;
+	int i;
+	char *dest = NULL;
 
-	if (str == 0)
-	{
+	if (str == NULL)
 		return (NULL);
-	}
-
-	size = _strlen(str) + 1;
-
-	dup = (char *)malloc(size * sizeof(char));
-
-	if (dup == 0)
-	{
+	for (i = 0; str[i] != '\0'; i++)
+		;
+	dest = malloc(sizeof(char) * (i + 1));
+	if (dest == NULL)
 		return (NULL);
-	}
-
-	for (i = 0; *(str + i) != '\0'; i++)
+	for (i = 0; str[i] != '\0'; i++)
 	{
-		*(dup + i) = *(str + i);
+		dest[i] = str[i];
 	}
-
-	*(dup + i) = '\0';
-
-	return (dup);
+	dest[i] = '\0';
+	return (dest);
 }
 
 
 /**
- * _strtok - string tokenizer
- * @line_messages: recieved to user
- * Return: the pointer arr
+ * _splitstring - counts number of words in string
+ * @str: pointer to string to be counted
+ * Return: the result
  */
 
-char **_strtok(char *line_messages)
+int _splitstring(char *str)
 {
-	char *delimiters = " ,!¡¿?'\"\n\t";
-	char *tok = NULL, **arr = NULL;
-	int i = 0;
+	int i, searchflag = 1, count = 0;
 
-	if (line_messages == NULL)
+	for (i = 0; str[i]; i++)
 	{
-		return (NULL);
+		if (str[i] != ' ' && searchflag == 1)
+		{
+			count += 1;
+			searchflag = 0;
+		}
+		if (str[i + 1] == ' ')
+			searchflag = 1;
 	}
-
-	arr = malloc(_strlen(line_messages) + 1024);
-
-	tok = strtok(line_messages, delimiters);
-	arr[i] = tok;
-
-	while (tok)
-	{
-		i++;
-		tok = strtok(NULL, delimiters);
-		arr[i] = tok;
-	}
-	i++;
-	arr[i] = NULL;
-	return (arr);
+	return (count);
 }
 
 
 /**
- *str_concat - concatenates two strings
- *@s1: string one
- *@s2: string two
- *Return: the result(array pointer)
+ * _strcmp - compares two strings
+ * @s1: string one
+ * @s2: string two
+ * Return: the result
  */
 
-char *str_concat(char *s1, char *s2)
+int _strcmp(const char *s1, const char *s2)
 {
-	char *array;
-	unsigned int i, j, size;
-
-	if (s1 == NULL)
-		s1 = "";
-	if (s2 == NULL)
-		s2 = "";
-
-	size = _strlen(s1) + _strlen(s2) + 2;
-	array = (char *)malloc(size * sizeof(char));
-
-	if (array == 0)
+	while ((*s1 != '\0' && *s2 != '\0') && *s1 == *s2)
 	{
-		return (NULL);
+		s1++;
+		s2++;
 	}
+	if (*s1 == *s2)
+		return (0);
+	else
+		return (*s1 - *s2);
+}
 
-	for (i = 0; s1[i] != '\0'; i++)
-	{
-		array[i] = s1[i];
-	}
 
-	array[i] = '/';
-	i++;
+/**
+ * _strcat - concatenates two strings
+ * @src: source string
+ * @dest: destination
+ * Return: char type
+ */
+char *_strcat(char *src, char *dest)
+{
+	int i, j;
 
-	for (j = 0; s2[j] != '\0'; j++)
-	{
-		array[i] = s2[j];
-		i++;
-	}
-	array[i] = 0;
-	return (array);
+	for (i = 0; dest[i] != '\0'; i++)
+		;
+	for (j = 0; src[j] != '\0'; j++, i++)
+		dest[i] = src[j];
+	dest[i] = '\0';
+	return (dest);
+}
+
+
+/**
+ * _strlen - returns the length of a string
+ * @s: pointer to the string
+ * Return: the length
+ */
+
+int _strlen(char *s)
+{
+	int i;
+
+	for (i = 0; s[i]; i++)
+		;
+	return (i);
 }
