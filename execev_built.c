@@ -15,16 +15,11 @@ void _execev(char **line, char *argv, int num, int isattr_val, char **env)
 	int _exec = 0;
 
 	if (line[0] == NULL)
-	{
 		return;
-	}
-
 	if (is_buit(line, env) == 1)
-	{
 		return;
-	}
-
 	pid = fork();
+
 	if (pid < 0)
 	{
 		printf("Error during fork\n");
