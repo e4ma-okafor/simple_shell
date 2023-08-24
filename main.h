@@ -4,43 +4,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <fcntl.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <fcntl.h>
 #include <signal.h>
 
+#define PATH_DELIMIT "=:"
+#define DELIMIT " \t\r\n\a\""
+#define BUFF_MAX 10
+#define MAXLIST 100
+#define STDOUT STDOUT_FILENO
+#define CLEAR_SCREEN write(STDOUT, "\033[H\033[J", 6)
+#define NEW_LINE write(STDOUT, "\n", 1)
+#define TOK_BUFSIZE 64
 extern char **environ;
 
-int main(void);
-
-/* Shell functions */
-int prompt(void);
-char *_read(void);
-char *_fullpathbuffer(char **argv, char *PATH, char *copy);
-int checkbuiltins(char **argv, char *buffer, int exitstatus);
-int _forkprocess(char **argv, char *buffer, char *fullpathbuffer);
-
-/* String manipulation */
-char *_strdup(char *str);
-int _splitstring(char *str);
-int _strcmp(const char *s1, const char *s2);
-char *_strcat(char *src, char *dest);
+int main(int argc __attribute__((unused)), char **av, char **env);
+char **free_dp(char **line);
 int _strlen(char *s);
-
-/*Tokenize & PATH Functions*/
-char **tokenize(char *buffer);
-int _splitPATH(char *str);
-int _PATHstrcmp(const char *s1, const char *s2);
-char *_concat(char *tmp, char **argv, char *token);
-
-/*Other Helper Funcs*/
-char *_getenv(const char *name);
-int _env(void);
-void _puts(char *str);
+int _strcmp(char *s1, char *s2);
+void _exit_function(void);
+void prompt_shell(void);
+char *get_line(int isatty_val);
+char **_strtok(char *line_messages);
+void _execev(char **line, char *argv, int num, int isatty_val, char **envi);
+int is_buit(char **line, char **environ);
+char *_strstr(char *haystack, char *needle);
+int _equal(char *dest, char *src);
+char *str_concat(char *s1, char *s2);
+char *_strdup(char *str);
+char **get_path(char **env);
+int count_chr(char *str, char *delimits);
+int check_path(char **env, char **argvs);
+void _printenv(char **environ);
 int _putchar(char c);
-char *_memset(char *s, char b, unsigned int n);
-
+void _puts(char *str);
+char **_path(char **environ);
 #endif

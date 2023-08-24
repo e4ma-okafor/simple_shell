@@ -2,40 +2,37 @@
 
 /**
  * main - Entry point
- * Return: 0 on success
+ * @argc:  count to arguments
+ * @av:  pointers with arguments
+ * @env: wherever
+ * Return: Nothing
  */
 
-int main(void)
+int main(int argc __attribute__((unused)), char **av, char **env)
 {
-	char *fullpathbuffer = NULL, *copy = NULL, *buffer = NULL;
-	char *PATH = NULL;
-	char **argv = NULL;
-	int exitstatus = 0;
+	char *string = NULL, **line = NULL;
+	int _num_prompt = 0, val_isatty = 0;
 
-	signal(SIGINT, SIG_IGN);
-	PATH = _getenv("PATH");
-	if (PATH == NULL)
-		return (-1);
 	while (1)
 	{
-		argv = NULL;
-		prompt();
-		buffer = _read();
-		if (*buffer != '\0')
+		val_isatty = isatty(STDIN_FILENO);
+		string = get_line(val_isatty);
+
+	if (_strcmp(string, "exit\n") == 0)
+	{
+		free(string);
+		exit(0);
+	}
+
+		if (string != NULL)
 		{
-			argv = tokenize(buffer);
-			if (argv == NULL)
-			{
-				free(buffer);
-				continue;
-			}
-			fullpathbuffer = _fullpathbuffer(argv, PATH, copy);
-			if (checkbuiltins(argv, buffer, exitstatus) != 0)
-				continue;
-			exitstatus = _forkprocess(argv, buffer, fullpathbuffer);
+			_num_prompt++;
+			line = _strtok(string);
+			_execev(line, av[0], _num_prompt, val_isatty, env);
+			free(string);
+			free(line);
 		}
-		else
-			free(buffer);
+		val_isatty = 0;
 	}
 	return (0);
 }

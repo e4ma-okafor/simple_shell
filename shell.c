@@ -1,184 +1,99 @@
 #include "main.h"
 
 /**
- * prompt - writes the command prompt
- * Return: 0 on sucess
+ * prompt_shell - function to print the prompt
+ * @void: wherever
+ * Return: none
  */
-
-int prompt(void)
+void prompt_shell(void)
 {
-	char *prompt = "$ ";
-	ssize_t writecount = 0;
-
-	if (isatty(STDIN_FILENO) == 1)
-	{
-		writecount = write(STDOUT_FILENO, prompt, 2);
-		if (writecount == -1)
-			exit(0);
-	}
-	return (0);
+	write(STDOUT, "\033[1;31m$ ", 32);
+	write(STDOUT, "\033[0m", 4);
 }
 
 
 /**
- * _read - reads the input and stores it in a buffer
- * Return: a pointer to the buffer
+ * _strtok - Split to token of strok
+ * @line_messages: recieved to user
+ * Return: the chit(s)
  */
-
-char *_read(void)
+char **_strtok(char *line_messages)
 {
-	ssize_t readcount = 0;
-	size_t n = 0;
-	char *buffer = NULL;
-	int x = 0;
+	char *delimiters = " ,!¡¿?'\"\n\t";
+	char *chit = NULL, **array = NULL;
+	int i = 0;
 
-	readcount = getline(&buffer, &n, stdin);
-	if (readcount == -1)
+	if (line_messages == NULL)
 	{
-		free(buffer);
-		if (isatty(STDIN_FILENO) != 0)
-			write(STDOUT_FILENO, "\n", 1);
-		exit(0);
+		return (NULL);
 	}
-	if (buffer[readcount - 1] == '\n' || buffer[readcount - 1] == '\t')
-		buffer[readcount - 1] = '\0';
-	for (x = 0; buffer[x]; x++)
+
+	array = malloc(_strlen(line_messages) + 1024);
+
+	chit = strtok(line_messages, delimiters);
+	array[i] = chit;
+
+	while (chit)
 	{
-		if (buffer[x] == '#' && buffer[x - 1] == ' ')
-		{
-			buffer[x] = '\0';
-			break;
-		}
+		i++;
+		chit = strtok(NULL, delimiters);
+		array[i] = chit;
 	}
-	return (buffer);
+	i++;
+	array[i] = NULL;
+	return (array);
 }
 
 
 /**
- * _fullpathbuffer - finds the path buffer
- * @argv: pointer to array of user strings
- * @PATH: pointer to PATH string
- * @copy: pointer to copy of PATH string
- * Return: a pointer to string
- */
-
-char *_fullpathbuffer(char **argv, char *PATH, char *copy)
+ * _path -  path execute commands
+ * @environ: Environ variable
+ * Return: token
+ **/
+char **_path(char **environ)
 {
-	char *token = NULL, *fullpathbuffer = NULL, *concatstr = NULL;
-	static char tmp[256];
-	int PATHcount = 0, fullpathflag = 0, z = 0, toklen = 0;
-	struct stat h;
+	int location = 0;
+	char **token;
 
-	copy = NULL;
-	copy = _strdup(PATH);
-	PATHcount = _splitPATH(copy);
-	token = strtok(copy, ": =");
-	while (token != NULL)
+	for (; environ[location] != NULL ; location++)
 	{
-		concatstr = _concat(tmp, argv, token);
-		if (stat(concatstr, &h) == 0)
+		if (environ[location][0] == 'P' && environ[location][2] == 'T')
 		{
-			fullpathbuffer = concatstr;
-			fullpathflag = 1;
-			break;
+			token = &(environ[location]);
 		}
-		if (z < PATHcount - 2)
-		{
-			toklen = _strlen(token);
-			if (token[toklen + 1] == ':')
-			{
-				if (stat(argv[0], &h) == 0)
-				{
-					fullpathbuffer = argv[0];
-					fullpathflag = 1;
-					break;
-				}
-			}
-		}
-		z++;
-		token = strtok(NULL, ":");
 	}
-	if (fullpathflag == 0)
-		fullpathbuffer = argv[0];
-	free(copy);
-	return (fullpathbuffer);
+	return (token);
 }
 
 
 /**
- * checkbuiltins - checks for builtins
- * @argv: pointer to array of user of strings
- * @buffer: pointer to user string
- * @exitstatus: exit status of execve
- * Return: 1 if user string is equal to env or 0 otherwise
+ * free_dp - free all file
+ * @line: double pointer to free
+ *
+ * Return: ptr null
  */
 
-int checkbuiltins(char **argv, char *buffer, int exitstatus)
+char **free_dp(char **line)
 {
-	int i;
+	int x;
 
-	if (_strcmp(argv[0], "env") == 0)
+	for (x = 0; line[x]; x++)
 	{
-		_env();
-		for (i = 0; argv[i]; i++)
-			free(argv[i]);
-		free(argv);
-		free(buffer);
-		return (1);
+		free(line[x]);
+		line[x] = NULL;
 	}
-	else if (_strcmp(argv[0], "exit") == 0)
-	{
-		for (i = 0; argv[i]; i++)
-			free(argv[i]);
-		free(argv);
-		free(buffer);
-		exit(exitstatus);
-	}
-	else
-		return (0);
+	free(line);
+	line = NULL;
+	return (NULL);
 }
 
 
 /**
- * _forkprocess - create process to execute
- * @argv: pointer to array of user of strings
- * @buffer: pointer to user string
- * @fullpathbuffer: pointer to user input
- * Return: 0 on success
+ * _exit_function - function to print
+ * @void: the exit
+ * Return: none
  */
-
-int _forkprocess(char **argv, char *buffer, char *fullpathbuffer)
+void _exit_function(void)
 {
-	int i, stat, result, exitstatus = 0;
-	pid_t pid;
-
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("Error");
-		exit(1);
-	}
-	if (pid == 0)
-	{
-		result =  execve(fullpathbuffer, argv, environ);
-		if (result == -1)
-		{
-			perror(argv[0]);
-			for (i = 0; argv[i]; i++)
-				free(argv[i]);
-			free(argv);
-			free(buffer);
-			exit(127);
-		}
-	}
-	wait(&stat);
-	if (WIFEXITED(stat))
-	{
-		exitstatus = WEXITSTATUS(stat);
-	}
-	for (i = 0; argv[i]; i++)
-		free(argv[i]);
-	free(argv);
-	free(buffer);
-	return (exitstatus);
+	kill(getpid(), SIGTERM);
 }
