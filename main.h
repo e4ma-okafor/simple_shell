@@ -38,5 +38,10 @@ int is_buit(char **line, char **env);
 void _printenv(char **envi);
 int check_path(char **env, char **argv);
 char *str_concat(char *s1, char *s2);
+int count_chr(char *str, char *delimits);
+char **get_path(char **envi);
+char **_path(char **env);
+char *_strstr(char *stack, char *needle);
+int _equal(char *src, char *dest);
 
 #endif

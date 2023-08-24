@@ -8,7 +8,7 @@
 
 void shell_prompt(void)
 {
-	write(STDOUT, "\033[1;31mSh_shell/user@root$ ", 32);
+	write(STDOUT, "\033[1;31m$ ", 32);
 	write(STDOUT, "\033[0m", 4);
 }
 
@@ -39,7 +39,7 @@ char *get_line(int isattr_val)
 
 	if (isattr_val == 1)
 	{
-		write(STDOUT, "\033[1;31mSh_shell/user@root$ ", 32);
+		write(STDOUT, "\033[1;31m$ ", 32);
 		write(STDOUT, "\033[0m", 4);
 	}
 
@@ -59,7 +59,7 @@ char *get_line(int isattr_val)
 
 
 /**
- * free_file - free all files
+ * free_dp - free all files
  * @line: double pointer argument
  * Return: null
  */
