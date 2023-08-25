@@ -44,4 +44,10 @@ void _printenv(char **environ);
 int _putchar(char c);
 void _puts(char *str);
 char **_path(char **environ);
+int _cd(char **argv, int count);
+char *_getenv(const char *name);
+void printerror(char **argv, int count, char **av);
+int write_integer_error(int number);
+int write_integer(int number);
+
 #endif
