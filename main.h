@@ -49,5 +49,7 @@ char *_getenv(const char *name);
 void printerror(char **argv, int count, char **av);
 int write_integer_error(int number);
 int write_integer(int number);
+char *_getLine(const int file);
+int _echo(char **av);
 
 #endif
